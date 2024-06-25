@@ -22,6 +22,7 @@
   
   .app--check--button:hover {
     background-color: #6b75a6;
+    transform: scale(1.1);
   }
   
   .app--error--message {
@@ -57,4 +58,8 @@
     width: 200px;
     border-radius: 10px;
     cursor: pointer;
+  }
+
+  .app--playagain--button:hover {
+    transform: scale(1.1);
   }
