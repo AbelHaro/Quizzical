@@ -4,19 +4,17 @@ body {
     color: #293264;
     background-color: #F5F7FB;
     padding: 30px;
-    position: relative; /* Establece el contexto de posicionamiento para las imágenes */
+    position: relative;
 }
 
 .background--image--1 {
-    position: absolute;
+    position: fixed;
     left: 0;
     bottom: 0;
-    z-index: 1; /* Coloca esta imagen encima de la otra */
 }
 
 .background--image--2 {
     position: fixed;
     top: 0;
     right: 0;
-    z-index: 0; /* Coloca esta imagen detrás de la otra */
 }

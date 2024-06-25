@@ -6,12 +6,13 @@ export function Question(props) {
     ? props.answers.slice(0, 4).map((answer, index) => (
         <button 
           key={index} 
-          className={`
+          className=
+          {`
             question--button 
             ${answer.isHeld && !props.checked ? "question--button--held" : "question--button--normal"}
-            ${answer.isHeld && props.checked && answer.text === props.correct_answer ? "question--button--correct" : ""}
+            ${props.checked && answer.text === props.correct_answer ? "question--button--correct" : ""}
             ${answer.isHeld && props.checked && answer.text !== props.correct_answer ? "question--button--incorrect" : ""}
-          `} 
+          `}
           onClick={() => !props.checked ? props.changeHeld(index): null}>{answer.text}
         </button>
       ))
@@ -25,5 +26,5 @@ export function Question(props) {
       </main>
       <hr className='question--separator'/>
     </div>
-  );
+  )
 }
