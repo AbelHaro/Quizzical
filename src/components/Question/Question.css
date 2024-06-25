@@ -1,0 +1,64 @@
+.question--container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px; /* Optional: Add padding for spacing */
+}
+
+.question--text {
+    margin-left: 10vw; /* Adjust margin as needed */
+    max-width: 75vw;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.question--button--container {
+    width: 75vw;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Space between buttons */
+    padding-bottom: 20px;
+    margin-left: 10vw;
+}
+
+.question--button {
+    margin-top: 10px;
+    font-family: 'Karla', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #4D5B9E;
+    border: 1px solid #4D5B9E;
+    background-color: transparent;
+    height: 30px;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 0 10px;
+}
+
+.question--button--held {
+    color: white;
+    background-color: #4D5B9E;
+}
+
+.question--button--held:hover {
+    background-color: #e15151;
+    border: 1px solid #e15151;
+}
+
+.question--button--normal:hover {
+    background-color: #D6DBF5;
+}
+
+.question--button--correct {
+    background-color: #94D7A2;
+}
+
+.question--button--incorrect {
+    background-color: #F8BCBC;
+}
+
+.question--separator {
+    width: 65vw;
+    color: #DBDEF0;
+}
