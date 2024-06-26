@@ -3,6 +3,7 @@ import './App.css'
 import { Initial } from '../Initial/Initial.jsx'
 import { Question } from '../Question/Question.jsx'
 import { decode } from 'html-entities'
+import { params } from '../../../api_params.js'
 
 export function App() {
   // Estado para el renderizado condicional, true renderiza la página de inicio, false renderiza la página con las preguntas.
@@ -23,43 +24,54 @@ export function App() {
   // Estado para forzar la petición a la API mediante useEffect.
   const [playAgainCount, setPlayAgainCount] = useState(0)
 
-  // Efecto para obtener los datos de la API cuando el componente se monta o se presiona el botón de 'Play Again'.
+  // Estado para saber la categoria de las preguntas.
+  const [category, setCategory] = useState(params.categories[0])
+
+  // Estado para saber la dificultad de las preguntas.
+  const [difficulty, setDifficulty] = useState(params.difficulties[0])
+
+  // Estado para mostrar el botón de 'Check Answers'.
+  const [showCheckAnswers, setShowCheckAnswers] = useState(false)
+
+  // Efecto para obtener los datos de la API cuando el se presiona el botón de 'Star Quiz' o 'Play Again'.
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("https://opentdb.com/api.php?amount=5&category=18&difficulty=medium&type=multiple")
+    if (!initialState) {
+      const fetchData = async () => {
+        try {
+          console.log(category, difficulty)
+          const response = await fetch(`https://opentdb.com/api.php?amount=5&category=${category.value}&difficulty=${difficulty.value}&type=multiple`)
+          //const response = await fetch("https://opentdb.com/api.php?amount=5&category=18&difficulty=medium&type=multiple")
 
-        if (response.status === 429) {
-          throw new Error("Too many requests. Please wait 5 seconds.")
-        }
-
-        const data = await response.json()
-        
-        // Almacena la respuesta de la API en un objeto con el formato deseado.
-        const newData = data.results.map((item, index) => {
-          const allAnswers = [...item.incorrect_answers, item.correct_answer]
-          return {
-            id: index, 
-            question: decode(item.question),  // Se utiliza 'decode()' para decodificar entidades HTML.
-            correct_answer: decode(item.correct_answer),
-            answers: allAnswers.map(answer => ({ text: decode(answer), isHeld: false})).sort(() => Math.random() - 0.5), //
-            checked: false 
+          if (response.status === 429) {
+            throw new Error("Too many requests. Please wait 5 seconds.")
           }
-        })
 
-        console.log(newData)
-        setData(newData)
+          const data = await response.json()
+          const newData = data.results.map((item, index) => {
+            const allAnswers = [...item.incorrect_answers, item.correct_answer]
+            return {
+              id: index,
+              question: decode(item.question),
+              correct_answer: decode(item.correct_answer),
+              answers: allAnswers.map(answer => ({ text: decode(answer), isHeld: false })).sort(() => Math.random() - 0.5),
+              checked: false
+            }
+          })
 
-      // Manejo de errores en la respuesta de la API, máximo => 1 query cada 5 segundos.
-      } catch (error) {   
-        setError(error.message)
-        setTimeout(fetchData, 5000)
-        setTimeout(() => setError(null), 5000)
+          console.log(newData)
+          setData(newData)
+          setShowCheckAnswers(true)
+
+        } catch (error) {
+          setError(error.message)
+          setTimeout(fetchData, 5000)
+          setTimeout(() => setError(null), 5000)
+        }
       }
-    }
 
-    fetchData()
-  }, [playAgainCount])
+      fetchData()
+    }
+  }, [playAgainCount, initialState, category, difficulty])
 
   /* Modifica el estado inicial, se activa al presionar el botón 'Start Quiz' del componente Inital. */
   function changeInitialState() { 
@@ -128,7 +140,15 @@ export function App() {
 
   return (
     <>
-      {initialState && <Initial startQuiz={changeInitialState} />}
+      {initialState && <Initial 
+                        startQuiz={changeInitialState} // Función para cambiar el estado inicial.
+                        params={params}                // Objeto con las categorías y dificultades.
+                        category={category}            // La categoría seleccionada.
+                        changeCategory={(pickerCategory) => {return setCategory(pickerCategory)}} // Función para cambiar la categoría.
+                        difficulty={difficulty}        // La dificultad seleccionada.
+                        changeDifficulty={(pickerDifficulty) => setDifficulty(pickerDifficulty)}  // Función para cambiar la dificultad.
+                       />
+      }
       
       {!initialState && (
         <main className='app--main'>
@@ -136,17 +156,20 @@ export function App() {
           {/* Muestra las preguntas solo si no hay error */}
           {!error && questions}
           {/* Muestra el botón de verificar respuestas si no hay error y no se han verificado las respuestas aún */}
-          {!error && !check && (
+          {!error && !check && showCheckAnswers && (
             <button className='app--check--button' onClick={checkAnswers}>
               Check answers
             </button>
-          )}
+            )}
           {/* Muestra el footer con los resultados si se han verificado las respuestas */}
           {check && (
             <footer className='app--footer'>
               <h4>{`You scored ${correctCount}/5 correct answers`}</h4>
               <button className='app--playagain--button' onClick={playAgain}>
                 Play Again
+              </button>
+              <button className='app--playagain--button' onClick={() => {playAgain();setInitialState(true)}}>
+                Go Back
               </button>
             </footer>
           )}
